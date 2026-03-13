@@ -1,0 +1,102 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int       @id @default(autoincrement())
+  email     String    @unique
+  password  String
+  name      String
+  role      UserRole  @default(SALES)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  customers Customer[] @relation("UserCustomers")
+  projects  Project[]  @relation("UserProjects")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  SALES
+}
+
+model Referrer {
+  id        Int           @id @default(autoincrement())
+  name      String
+  type      ReferrerType
+  contact   String?
+  remark    String?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  customers Customer[] @relation("ReferrerCustomers")
+  projects  Project[]  @relation("ReferrerProjects")
+}
+
+enum ReferrerType {
+  EMPLOYEE
+  CUSTOMER
+  PARTNER
+}
+
+model Customer {
+  id           Int       @id @default(autoincrement())
+  name         String
+  contactName  String?
+  contactPhone String?
+  contactEmail String?
+  industry     String?
+  size         String?
+  tags         String?
+  ownerId      Int
+  referrerId   Int?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  owner    User      @relation("UserCustomers", fields: [ownerId], references: [id])
+  referrer Referrer? @relation("ReferrerCustomers", fields: [referrerId], references: [id])
+
+  projects Project[]
+}
+
+model Project {
+  id               Int             @id @default(autoincrement())
+  name             String
+  customerId       Int
+  ownerId          Int
+  referrerId       Int?
+  amount           Float
+  stage            ProjectStage    @default(LEAD)
+  commissionType   CommissionType  @default(NONE)
+  commissionRate   Float?
+  commissionAmount Float?
+  expectedCloseAt  DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  customer Customer @relation(fields: [customerId], references: [id])
+  owner    User     @relation("UserProjects", fields: [ownerId], references: [id])
+  referrer Referrer? @relation("ReferrerProjects", fields: [referrerId], references: [id])
+}
+
+enum ProjectStage {
+  LEAD
+  QUALIFIED
+  PROPOSAL
+  NEGOTIATION
+  WON
+  LOST
+}
+
+enum CommissionType {
+  NONE
+  PERCENTAGE
+  FIXED
+}
+
