@@ -2,13 +2,17 @@
   "name": "crm-app",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "npx tsx prisma/seed.ts"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
     "prisma:migrate": "prisma migrate dev",
-    "prisma:generate": "prisma generate"
+    "prisma:generate": "prisma generate",
+    "prisma:seed": "prisma db seed"
   },
   "dependencies": {
     "@prisma/client": "^5.15.0",
@@ -24,10 +28,11 @@
     "@types/react": "^18.2.79",
     "@types/react-dom": "^18.2.25",
     "autoprefixer": "^10.4.18",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "14.2.3",
     "postcss": "^8.4.38",
     "prisma": "^5.15.0",
-    "typescript": "^5.4.5",
-    "eslint": "^8.57.0",
-    "eslint-config-next": "14.2.3"
+    "tsx": "^4.21.0",
+    "typescript": "^5.4.5"
   }
 }
